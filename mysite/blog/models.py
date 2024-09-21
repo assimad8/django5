@@ -1,7 +1,11 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.db.models.functions import Now
+# from django.db.models.functions import Now
+
+class PublishedManager(models.Manager):
+    def get_queryset(self) -> models.QuerySet:
+        return super().get_queryset().filter(status=Post.Status.PUBLISHED)
 
 class Post(models.Model):
     class Status(models.TextChoices):
@@ -23,6 +27,9 @@ class Post(models.Model):
         default=Status.DRAFT
     )
     # publish = models.DateTimeField(db_default=Now())
+
+    objects = models.Manager()
+    published = PublishedManager()
 
     class Meta:
         ordering = ['-publish']
